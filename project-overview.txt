@@ -112,6 +112,13 @@ LM Studio     Stable Diff
 * **Stateless API**
 * **Scalable with Docker or PM2**
 
+
+# Clone the official repo
+git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
+
+# Install dependencies and run
+cd stable-diffusion-webui
+./webui.sh --api --listen
 ---
 
 
