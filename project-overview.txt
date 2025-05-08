@@ -1,0 +1,119 @@
+Here’s a clear, senior-level **technical overview** for turning your Express.js-based AI backend into a **lightweight, multi-tenant SaaS service** using **API key-based control**—without isolated data storage.
+
+---
+
+## ✅ **PROJECT GOAL**
+
+**Stateless, multi-tenant AI generation service** (text + image) using:
+
+* LM Studio (text gen)
+* Stable Diffusion (image gen)
+* Express.js backend
+* API keys for tenant-level access & control
+* Optional lightweight metering/logging
+* No per-user storage or login system
+
+---
+
+## 🔧 **SYSTEM COMPONENTS**
+
+### **1. Express.js Backend**
+
+Handles all requests:
+
+* `/generate-text` → routes prompt to LM Studio
+* `/generate-image` → routes prompt to Stable Diffusion
+* Middleware enforces tenant-level policies using API key
+
+---
+
+### **2. LM Studio (Text Gen)**
+
+* OpenAI-compatible local model API
+* Receives chat completion prompt
+* Runs locally or on a GPU-enabled EC2 instance
+* Integrates with `axios` in Express
+
+---
+
+### **3. Stable Diffusion API (Image Gen)**
+
+* AUTOMATIC1111 Web UI or `diffusers` backend
+* Accepts a text prompt and returns an image
+* Optional: Use `base64` or save to disk and return URL
+
+---
+
+### **4. API Key-Based Tenant Control**
+
+**No database** needed—tenants defined in a config file:
+
+```js
+// config/tenants.js
+module.exports = {
+  "abc123": { plan: "free", allowNSFW: false },
+  "pro987": { plan: "pro", allowNSFW: true }
+};
+```
+
+Middleware reads `x-api-key` and attaches `req.tenant`.
+
+---
+
+### **5. Custom Logic per Tenant**
+
+Applied directly in routes or services:
+
+* Block NSFW prompts for free users
+* Rate limiting (optionally per API key)
+* Logging usage per request
+
+---
+
+## 🧱 **ARCHITECTURE OVERVIEW**
+
+```plaintext
+        ┌──────────────┐
+        │   CLIENT     │
+        └────┬─────────┘
+             ▼
+     ┌──────────────┐
+     │ Express.js   │
+     │ Backend API  │
+     ├──────────────┤
+     │ Auth (API Key)│◄── tenant plan check
+     │ Prompt Filter │
+     └────┬─────────┘
+          │
+   ┌──────┴───────┐
+   ▼              ▼
+LM Studio     Stable Diff
+(Text API)     (Image API)
+
+```
+
+---
+
+## 🧩 **EXTENSIONS / PLUG-INS YOU CAN ADD LATER**
+
+| Feature              | Purpose                        | Tool/Notes                 |
+| -------------------- | ------------------------------ | -------------------------- |
+| `express-rate-limit` | Prevent abuse per API key      | Use `req.tenant` as key    |
+| Stripe Billing       | Charge per generation or plan  | Billing by key             |
+| Usage Logs           | Track prompt counts per tenant | File or Redis              |
+| NSFW Classifier      | Auto-flag bad prompts          | Optional lightweight model |
+
+---
+
+## ✅ YOU HAVE:
+
+* **Tenant access control**
+* **Dynamic prompt filtering**
+* **Stateless API**
+* **Scalable with Docker or PM2**
+
+---
+
+
+
+
